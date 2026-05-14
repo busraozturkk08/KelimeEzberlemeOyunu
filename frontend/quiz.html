@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sınav Modülü - Kelime Ezber</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="d-flex min-vh-100">
+
+        <div class="sidebar-bg sidebar-wrapper d-flex flex-column flex-shrink-0 p-3 text-white shadow">
+            <a href="dashboard.html" class="d-flex align-items-center mb-4 text-white text-decoration-none">
+                <span class="fs-4 fw-bold ms-2 mt-2">Kelime Ezber</span>
+            </a>
+            <hr class="border-light mt-0 opacity-50">
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li><a href="dashboard.html" class="sidebar-link">🏠 Ana Sayfa</a></li>
+                <li><a href="add-word.html" class="sidebar-link">➕ Kelime Ekle</a></li>
+                <li><a href="word-list.html" class="sidebar-link">📋 Kelime Listesi</a></li>
+                <li><a href="quiz.html" class="sidebar-link active">📝 Sınav Modülü</a></li>
+                <li><a href="report.html" class="sidebar-link">📊 Analiz Raporu</a></li>
+                <li><a href="games.html" class="sidebar-link">🎮 Oyunlar</a></li>
+            </ul>
+            <hr class="border-light opacity-50">
+            <ul class="nav flex-column">
+                <li><a href="settings.html" class="sidebar-link">⚙️ Ayarlar</a></li>
+            </ul>
+        </div>
+
+        <div class="flex-grow-1 d-flex flex-column">
+            
+            <header class="p-3 mb-4 bg-primary shadow-sm d-flex justify-content-end align-items-center px-4">
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle fw-bold" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img id="headerAvatar" src="https://ui-avatars.com/api/?name=Kullanici+Adi&background=ffffff&color=0d6efd" alt="Profil" width="32" height="32" class="rounded-circle me-2">
+                        Profil
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownUser">
+                        <li><a class="dropdown-item fw-bold text-primary" href="profile.html">👤 Profil Bilgileri</a></li>
+                        <li><a class="dropdown-item" href="report.html">📊 Gelişim Raporu</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger fw-bold" href="#">🚪 Çıkış Yap</a></li>
+                    </ul>
+                </div>
+            </header>
+
+            <div class="container px-4 flex-grow-1">
+                <div class="row justify-content-center align-items-center h-100">
+                    <div class="col-md-8 col-lg-6">
+                        
+                        <div id="setup-section" class="quiz-card text-center p-5">
+                            <div class="mb-4"><span class="icon-xl">🎯</span></div>
+                            <h2 class="fw-bold text-dark mb-3">Sınava Hazır Mısın?</h2>
+                            <p class="text-muted mb-4">Soru sayısını belirle ve hemen başla!</p>
+                            
+                            <div class="mx-auto max-w-320">
+                                <select class="form-select form-select-lg mb-3 shadow-sm fw-bold text-center" id="questionCountSelect" onchange="toggleCustomInput()">
+                                    <option value="5" selected>5 Soru (Hızlı)</option>
+                                    <option value="10">10 Soru (Standart)</option>
+                                    <option value="20">20 Soru (Zorlu)</option>
+                                    <option value="50">50 Soru (Maraton)</option>
+                                    <option value="custom">Özel Sayı Belirle...</option>
+                                </select>
+
+                                <div id="customInputDiv" class="mb-4 d-none">
+                                    <label class="form-label small fw-bold text-primary">İstediğiniz Soru Sayısı:</label>
+                                    <input type="number" id="customQuestionCount" class="form-control form-control-lg text-center fw-bold" min="1" max="100" placeholder="Örn: 15">
+                                </div>
+
+                                <button class="btn btn-success btn-lg w-100 fw-bold shadow-sm py-3" onclick="startQuiz()">Sınava Başla 🚀</button>
+                            </div>
+                        </div>
+
+                        <div id="active-quiz-section" class="d-none">
+                            <div class="d-flex justify-content-between align-items-center mb-3 px-2">
+                                <span class="badge bg-primary fs-6 py-2 px-3 shadow-sm">
+                                    Soru: <span id="currentQuestionNum">1</span> / <span id="totalQuestionNum">5</span>
+                                </span>
+                                <button class="btn btn-sm btn-outline-danger fw-bold" onclick="endQuizEarly()">Sınavdan Çık</button>
+                            </div>
+
+                            <div class="quiz-card text-center mb-5 p-4 p-md-5">
+                                <h5 class="text-muted mb-2 fw-bold">İngilizce -> Türkçe</h5>
+                                <h1 class="display-5 fw-bold text-dark mb-4 text-lowercase" id="questionWord">horse</h1>
+                                
+                                <div class="quiz-image-wrapper shadow-sm">
+                                    <img id="questionImage" src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?q=80&w=800&auto=format&fit=crop" alt="Word Image">
+                                </div>
+                                
+                                <div class="examples-box shadow-sm">
+                                    <h6 class="fw-bold text-dark mb-2">Örnek Cümleler:</h6>
+                                    <ul id="questionSentences" class="mb-0"><li>Horses can run very fast.</li></ul>
+                                </div>
+                                
+                                <form onsubmit="submitAnswer(event)">
+                                    <div class="mb-4">
+                                        <input type="text" class="form-control form-control-lg text-center shadow-sm" id="answerInput" placeholder="Cevabınızı yazın..." required autocomplete="off">
+                                    </div>
+                                    <div class="d-flex justify-content-center gap-3">
+                                        <button type="submit" class="btn btn-success btn-lg px-5 fw-bold shadow-sm">Cevapla</button>
+                                        <button type="button" class="btn btn-secondary btn-lg px-4 fw-bold shadow-sm" onclick="skipQuestion()">Boş Bırak</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div id="result-section" class="quiz-card text-center p-5 d-none">
+                            <div class="result-circle res-correct shadow-sm" id="resultCircle">%0</div>
+                            <h2 class="fw-bold text-dark mb-2">Sınav Tamamlandı!</h2>
+                            <p class="text-muted mb-4">Performans özeti aşağıdadır:</p>
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-4">
+                                    <div class="p-3 bg-light rounded shadow-sm border border-success border-opacity-25">
+                                        <h5 class="text-success fw-bold mb-0" id="finalCorrect">0</h5>
+                                        <small class="text-muted">Doğru</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-3 bg-light rounded shadow-sm border border-danger border-opacity-25">
+                                        <h5 class="text-danger fw-bold mb-0" id="finalWrong">0</h5>
+                                        <small class="text-muted">Yanlış</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-3 bg-light rounded shadow-sm border border-secondary border-opacity-25">
+                                        <h5 class="text-secondary fw-bold mb-0" id="finalEmpty">0</h5>
+                                        <small class="text-muted">Boş</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary btn-lg fw-bold shadow-sm" onclick="location.reload()">Yeniden Dene</button>
+                                <a href="dashboard.html" class="btn btn-outline-secondary fw-bold">Ana Sayfaya Dön</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/global.js"></script>
+    <script src="js/quiz.js"></script>
+</body>
+</html>
