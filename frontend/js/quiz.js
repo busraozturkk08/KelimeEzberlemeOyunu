@@ -56,9 +56,22 @@ function loadQuestion() {
 function submitAnswer(event) {
     event.preventDefault();
     const answer = document.getElementById('answerInput').value.trim().toLowerCase();
-    const correctAnswer = quizWords[currentIdx].turkce.toLowerCase();
+    const currentWord = quizWords[currentIdx];
+    const isCorrect = (answer === currentWord.turkce.toLowerCase());
 
-    if (answer === correctAnswer) corrects++;
+    // 1. CEVABI SENİN BACKEND ALGORİTMANA GÖNDERİYORUZ
+    fetch(`${API_BASE_URL}/quiz/answer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            userId: 1, // Şimdilik sabit kullanıcı
+            wordId: currentWord.id, // Doğru/Yanlış bilinen kelimenin ID'si
+            isCorrect: isCorrect // true veya false
+        })
+    }).catch(err => console.error("Kelime algoritması güncellenemedi:", err));
+
+    // 2. LOKAL SKORLARI GÜNCELLE
+    if (isCorrect) corrects++;
     else wrongs++;
     
     currentIdx++;
